@@ -2,13 +2,13 @@
 Polygon = class()
 
 function Polygon:init(points_, closed_, filled_, bordered_,
-                    background_, borderColor_, borderWidth_)
+                    background_, border_, borderWidth_)
     self.points = points_
     self.closed = closed_
     self.filled = filled_
     self.bordered = bordered_
     self.background = background_
-    self.borderColor = borderColor_
+    self.border = border_
     self.borderWidth = borderWidth_
 end 
     
@@ -92,23 +92,7 @@ function Polygon:drawBorder()
     end
     table.insert(joinPoints, vec2(joinPoints[1].x, joinPoints[1].y))
     
-    self:fillPolygon(joinPoints, self.borderColor)
-end
-    
-function Polygon:simpleStrokeBorder(points_, width_, strokeColor_)
-    pushStyle()
-    smooth()
-    stroke(strokeColor_)
-    strokeWidth(width_)
-    
-    prevPt = nil;
-    for i, pt in ipairs(points_) do
-        if prevPt ~= nil then
-            line(prevPt.x, prevPt.y, pt.x, pt.y)
-        end
-        prevPt = pt;
-    end
-    popStyle()
+    self:fillPolygon(joinPoints, self.border)
 end
     
 function Polygon:fillPolygon(points_, color_)
@@ -123,7 +107,6 @@ function Polygon:fillPolygon(points_, color_)
     
     pushStyle()
     noSmooth()
-    fill(color_)
     
     lPoligon = {}
 
@@ -154,6 +137,8 @@ function Polygon:fillPolygon(points_, color_)
             scanlineEnd = sortedEdges[i].p2.y
         end
     end
+    
+    bounds = self:getBounds(lPoligon)
 
 
     -- scanline starts at smallest y coordinate
@@ -214,7 +199,16 @@ function Polygon:fillPolygon(points_, color_)
             -- so draw all line segments on current scanline
             for i = 1, table.maxn(list) - 1 do
                 if i % 2 == 1 and list[i] < list[i+1] then
-                    rect(list[i] + 1, scanline, list[i+1] - list[i] - 1, 1);
+                    
+                    x = list[i] + 1
+                    y = scanline
+                    w = list[i+1] - list[i] - 1
+                    h = 1
+                    
+                    for j = 1, w do
+                        fill(color_:getColor(vec2(x+j, y), bounds))
+                        rect(x + j, y, 1, 1)
+                    end
                 end
                 
             end

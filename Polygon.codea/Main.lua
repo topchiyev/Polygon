@@ -103,8 +103,9 @@ function setup()
     polygon.closed = true
     polygon.filled = true
     polygon.bordered = true
-    polygon.background = color(0, 57, 255, 100)
-    polygon.borderColor = color(255, 0, 0, 255)
+    color(0, 255, 0)
+    polygon.background = Background({color(0, 255, 0), color(0, 0, 255)}, 0)
+    polygon.border = Background(color(255, 0, 0, 255))
     polygon.borderWidth = 6
 end
 
